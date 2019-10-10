@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://js.lisk.io/lisk-elements-2.0.0.min.js"></script>
+  </head>
+  <body>
+    <script>
+      function generate() {
+        // -------------------------------------------
+        // generate passphrase
+        // -------------------------------------------
+        var p =lisk.passphrase.Mnemonic.generateMnemonic();
+        document.querySelector('#_passphrase').value = p;
+        convert();
+      }
+      function convert() {
+        // -------------------------------------------
+        // get passphrase
+        // -------------------------------------------
+        var p = document.querySelector('#_passphrase').value;
+        
+        // -------------------------------------------
+        // get entroyp
+        // -------------------------------------------
+        var e = lisk.passphrase.Mnemonic.mnemonicToEntropy(p);
+        document.querySelector('#_entropy').innerHTML = e;
+        
+        // -------------------------------------------
+        // convert passphrase hash
+        // -------------------------------------------
+        var phash = lisk.cryptography.hash(p, 'utf8');
+        var phashText = "";
+        for (v of phash) {
+          var a = v.toString(16);
+          phashText += a.length === 2? a + " ": "0" + a + " ";
+        }
+        document.querySelector('#_psha').innerHTML = phashText.trim();
+        
+        // -------------------------------------------
+        // get keys (ed25519)
+        // -------------------------------------------
+        var keys = lisk.cryptography.getPrivateAndPublicKeyFromPassphrase(p);
+        var kp = lisk.cryptography.hexToBuffer(keys.publicKey);
+        var kpText = "";
+        for (v of kp) {
+          var a = v.toString(16);
+          kpText += a.length === 2? a + " ": "0" + a + " ";
+        }
+        document.querySelector('#_kp').innerHTML = kpText.trim();
+        
+        var ks = lisk.cryptography.hexToBuffer(keys.privateKey);
+        var ksText = "";
+        for (v of ks) {
+          var a = v.toString(16);
+          ksText += a.length === 2? a + " ": "0" + a + " ";
+        }
+        document.querySelector('#_ks').innerHTML = ksText.trim();
+        
+        // -------------------------------------------
+        // get public key hash
+        // -------------------------------------------
+        var khash = lisk.cryptography.hash(kp, 'utf8');
+        var khashText = "";
+        for (v of khash) {
+          var a = v.toString(16);
+          khashText += a.length === 2? a + " ": "0" + a + " ";
+        }
+        document.querySelector('#_ksha').innerHTML = khashText.trim();
+        
+        // -------------------------------------------
+        // get the first 8 bytes
+        // -------------------------------------------
+        var khash8 = new Uint8Array([khash[0],khash[1],khash[2],khash[3],khash[4],khash[5],khash[6],khash[7]])
+        document.querySelector('#_ksha8').innerHTML = khashText.trim().substring(0, 23);
+        
+        // -------------------------------------------
+        // reverse first 8 bytes
+        // -------------------------------------------
+        var rkhash8 = new Uint8Array([khash[7],khash[6],khash[5],khash[4],khash[3],khash[2],khash[1],khash[0]])
+        var rkhash8Text = "";
+        for (v of rkhash8) {
+          var a = v.toString(16);
+          rkhash8Text += a.length === 2? a + " ": "0" + a + " ";
+        }
+        document.querySelector('#_rksha8').innerHTML = rkhash8Text.trim();
+        
+        // -------------------------------------------
+        // convert decimal number
+        // -------------------------------------------
+        var address = lisk.cryptography.bufferToBigNumberString(rkhash8) + "L";
+        document.querySelector('#_address').innerHTML = address;
+      }
+    </script>
+    <button onclick="generate()" style="font-size: 20px; border-radius: 5px; padding: 10px;">generate passphrase</button>
+    
+    <p>
+      <div style="font-weight:bold;font-size: 20px;">passphrase</div>
+      <input type="text" size="80%" id="_passphrase" style="padding: 5px; font-size: 18px;" value="chicken problem whip mobile shield angry hard toast disease chronic code category" />
+    </p>
+    
+    <p>
+      <div style="font-weight:bold;font-size: 20px;">entropy</div>
+      <div id="_entropy"></div>
+    </p>
+    
+    <button onclick="convert()" style="font-size: 20px; border-radius: 5px; padding: 10px;">convert passphrase</button>
+    
+    <p>
+      <div style="font-weight:bold;font-size: 20px;">1. passphrase -> hash(sha256)</div>
+      <div id="_psha"></div>
+    </p>
+    
+    <p>
+      <div style="font-weight:bold;font-size: 20px;">2. passphrase hash -> generate keys(ed25519)</div>
+      <div style="font-weight:bold">[public key]</div>
+      <div id="_kp"></div>
+      <div style="font-weight:bold">[private key]</div>
+      <div id="_ks"></div>
+    </p>
+    
+    <p>
+      <div style="font-weight:bold;font-size: 20px;">3. public key -> hash(sha256)</div>
+      <div id="_ksha"></div>
+    </p>
+    
+    <p>
+      <div style="font-weight:bold;font-size: 20px;">4. public key hash -> Get the first 8 bytes</div>
+      <div id="_ksha8"></div>
+    </p>
+    
+    <p>
+      <div style="font-weight:bold;font-size: 20px;">5. first 8 bytes -> reverse</div>
+      <div id="_rksha8"></div>
+    </p>
+    
+    <p>
+      <div style="font-weight:bold;font-size: 20px;">6. reverse value -> convert decimal number</div>
+      <div id="_address"></div>
+    </p>
+    
+  </body>
+</html>
