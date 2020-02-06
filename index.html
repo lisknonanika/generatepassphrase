@@ -49,6 +49,7 @@
           kpText += a.length === 2? a + " ": "0" + a + " ";
         }
         document.querySelector('#_kp').innerHTML = kpText.trim();
+        document.querySelector('#_kp2').innerHTML = (keys.publicKey);
         
         var ks = lisk.cryptography.hexToBuffer(keys.privateKey);
         var ksText = "";
@@ -116,6 +117,7 @@
       <div style="font-weight:bold;font-size: 20px;">2. passphrase hash -> generate keys(ed25519)</div>
       <div style="font-weight:bold">[public key]</div>
       <div id="_kp"></div>
+      <div id="_kp2"></div>
       <div style="font-weight:bold">[private key]</div>
       <div id="_ks"></div>
     </p>
