@@ -49,7 +49,7 @@
           kpText += a.length === 2? a + " ": "0" + a + " ";
         }
         document.querySelector('#_kp').innerHTML = kpText.trim();
-        document.querySelector('#_kp2').innerHTML = (keys.publicKey);
+        document.querySelector('#_kp2').innerHTML = "(" + keys.publicKey + ")";
         
         var ks = lisk.cryptography.hexToBuffer(keys.privateKey);
         var ksText = "";
